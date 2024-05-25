@@ -75,8 +75,12 @@ class BDDLBaseDomain(SingleArmEnv):
         arena_type="table",
         scene_xml="scenes/libero_base_style.xml",
         scene_properties={},
+        table_rgba: list=None,
         **kwargs,
     ):
+        if table_rgba is None:
+            table_rgba = [0.5, 0.5, 0.5, 1]
+        self.table_rgba = table_rgba
         t0 = time.time()
         # settings for table top (hardcoded since it's not an essential part of the environment)
         self.workspace_offset = workspace_offset
@@ -310,6 +314,7 @@ class BDDLBaseDomain(SingleArmEnv):
                 table_full_size=self.table_full_size,
                 table_offset=self.workspace_offset,
                 table_friction=(0.6, 0.005, 0.0001),
+                table_rgba=self.table_rgba,
                 xml=self._arena_xml,
                 **self._arena_properties,
             )

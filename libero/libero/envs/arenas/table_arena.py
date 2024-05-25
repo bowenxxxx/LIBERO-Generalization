@@ -30,6 +30,7 @@ class TableArena(Arena):
         table_full_size=(0.8, 0.8, 0.05),
         table_friction=(1, 0.005, 0.0001),
         table_offset=(0, 0, 0.8),
+        table_rgba=None,
         has_legs=True,
         xml="arenas/table_arena.xml",
         floor_style="light-gray",
@@ -37,6 +38,9 @@ class TableArena(Arena):
     ):
         super().__init__(xml_path_completion(xml))
 
+        if table_rgba is None:
+            table_rgba = [0.5, 0.5, 0.5, 1]
+        self.table_rgba = table_rgba
         self.table_full_size = np.array(table_full_size)
         self.table_half_size = self.table_full_size / 2
         self.table_friction = table_friction
@@ -85,7 +89,7 @@ class TableArena(Arena):
         self.table_collision.set("size", array_to_string(self.table_half_size))
         self.table_collision.set("friction", array_to_string(self.table_friction))
         self.table_visual.set("size", array_to_string(self.table_half_size))
-        # self.table_visual.set("rgba", array_to_string([0, 0, 0, 0]))
+        self.table_visual.set("rgba", array_to_string(self.table_rgba))
 
         self.table_top.set(
             "pos", array_to_string(np.array([0, 0, self.table_half_size[2]]))
