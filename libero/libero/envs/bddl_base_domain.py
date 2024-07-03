@@ -20,7 +20,6 @@ from libero.libero.envs.objects import *
 from libero.libero.envs.regions import *
 from libero.libero.envs.arenas import *
 
-
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 TASK_MAPPING = {}
@@ -40,47 +39,51 @@ class BDDLBaseDomain(SingleArmEnv):
     """
 
     def __init__(
-        self,
-        bddl_file_name,
-        robots,
-        env_configuration="default",
-        controller_configs=None,
-        gripper_types="default",
-        initialization_noise="default",
-        use_latch=False,
-        use_camera_obs=True,
-        use_object_obs=True,
-        reward_scale=1.0,
-        reward_shaping=False,
-        placement_initializer=None,
-        object_property_initializers=None,
-        has_renderer=False,
-        has_offscreen_renderer=True,
-        render_camera="frontview",
-        render_collision_mesh=False,
-        render_visual_mesh=True,
-        render_gpu_device_id=-1,
-        control_freq=20,
-        horizon=1000,
-        ignore_done=False,
-        hard_reset=True,
-        camera_names="agentview",
-        camera_heights=256,
-        camera_widths=256,
-        camera_depths=False,
-        camera_segmentations=None,
-        renderer="mujoco",
-        table_full_size=(1.0, 1.0, 0.05),
-        workspace_offset=(0.0, 0.0, 0.0),
-        arena_type="table",
-        scene_xml="scenes/libero_base_style.xml",
-        scene_properties={},
-        table_rgba: list=None,
-        **kwargs,
+            self,
+            bddl_file_name,
+            robots,
+            env_configuration="default",
+            controller_configs=None,
+            gripper_types="default",
+            initialization_noise="default",
+            use_latch=False,
+            use_camera_obs=True,
+            use_object_obs=True,
+            reward_scale=1.0,
+            reward_shaping=False,
+            placement_initializer=None,
+            object_property_initializers=None,
+            has_renderer=False,
+            has_offscreen_renderer=True,
+            render_camera="frontview",
+            render_collision_mesh=False,
+            render_visual_mesh=True,
+            render_gpu_device_id=-1,
+            control_freq=20,
+            horizon=1000,
+            ignore_done=False,
+            hard_reset=True,
+            camera_names="agentview",
+            camera_heights=256,
+            camera_widths=256,
+            camera_depths=False,
+            camera_segmentations=None,
+            renderer="mujoco",
+            table_full_size=(1.0, 1.0, 0.05),
+            workspace_offset=(0.0, 0.0, 0.0),
+            arena_type="table",
+            scene_xml="scenes/libero_base_style.xml",
+            scene_properties={},
+            table_rgba: list = None,
+            change_table_color1: bool = False,
+            change_table_color2: bool = False,
+            **kwargs,
     ):
         if table_rgba is None:
             table_rgba = [0.5, 0.5, 0.5, 1]
         self.table_rgba = table_rgba
+        self.change_table_color1 = change_table_color1
+        self.change_table_color2 = change_table_color2
         t0 = time.time()
         # settings for table top (hardcoded since it's not an essential part of the environment)
         self.workspace_offset = workspace_offset
@@ -195,7 +198,7 @@ class BDDLBaseDomain(SingleArmEnv):
     def _assert_problem_name(self):
         """Implement this to make sure the loaded bddl file has the correct problem name specification."""
         assert (
-            self.parsed_problem["problem_name"] == self.__class__.__name__.lower()
+                self.parsed_problem["problem_name"] == self.__class__.__name__.lower()
         ), "Problem name mismatched"
 
     def _load_fixtures_in_arena(self, mujoco_arena):
@@ -217,7 +220,7 @@ class BDDLBaseDomain(SingleArmEnv):
         raise NotImplementedError
 
     def _generate_object_state_wrapper(
-        self, skip_object_names=["main_table", "floor", "countertop", "coffee_table"]
+            self, skip_object_names=["main_table", "floor", "countertop", "coffee_table"]
     ):
         object_states_dict = {}
         tracking_object_states_changes = []
@@ -226,8 +229,8 @@ class BDDLBaseDomain(SingleArmEnv):
                 continue
             object_states_dict[object_name] = ObjectState(self, object_name)
             if (
-                self.objects_dict[object_name].category_name
-                in VISUAL_CHANGE_OBJECTS_DICT
+                    self.objects_dict[object_name].category_name
+                    in VISUAL_CHANGE_OBJECTS_DICT
             ):
                 tracking_object_states_changes.append(object_states_dict[object_name])
 
@@ -238,8 +241,8 @@ class BDDLBaseDomain(SingleArmEnv):
                 self, object_name, is_fixture=True
             )
             if (
-                self.fixtures_dict[object_name].category_name
-                in VISUAL_CHANGE_OBJECTS_DICT
+                    self.fixtures_dict[object_name].category_name
+                    in VISUAL_CHANGE_OBJECTS_DICT
             ):
                 tracking_object_states_changes.append(object_states_dict[object_name])
 
@@ -354,20 +357,43 @@ class BDDLBaseDomain(SingleArmEnv):
                 self.living_room_table_full_size[0]
             )
             self.robots[0].robot_model.set_base_xpos(xpos)
-            mujoco_arena = LivingRoomTableArena(
-                xml=self._arena_xml,
-                **self._arena_properties,
-            )
+            if self.change_table_color1:
+                mujoco_arena = LivingRoomTableArena(
+                    xml=os.path.join(self.custom_asset_dir, "scenes/libero_living_room_tabletop_rgba1_style.xml"),
+                    **self._arena_properties,
+                )
+            elif self.change_table_color2:
+                mujoco_arena = LivingRoomTableArena(
+                    xml=os.path.join(self.custom_asset_dir, "scenes/libero_living_room_tabletop_rgba2_style.xml"),
+                    **self._arena_properties,
+                )
+            else:
+                mujoco_arena = LivingRoomTableArena(
+                    xml=self._arena_xml,
+                    **self._arena_properties,
+                )
 
         elif self._arena_type == "study":
             xpos = self.robots[0].robot_model.base_xpos_offset["study_table"](
                 self.study_table_full_size[0]
             )
             self.robots[0].robot_model.set_base_xpos(xpos)
-            mujoco_arena = StudyTableArena(
-                xml=self._arena_xml,
-                **self._arena_properties,
-            )
+
+            if self.change_table_color1:
+                mujoco_arena = StudyTableArena(
+                    xml=os.path.join(self.custom_asset_dir, "scenes/libero_study_rgba1_style.xml"),
+                    **self._arena_properties,
+                )
+            elif self.change_table_color2:
+                mujoco_arena = StudyTableArena(
+                    xml=os.path.join(self.custom_asset_dir, "scenes/libero_study_rgba2_style.xml"),
+                    **self._arena_properties,
+                )
+            else:
+                mujoco_arena = StudyTableArena(
+                    xml=self._arena_xml,
+                    **self._arena_properties,
+                )
 
         # Arena always gets set to zero origin
         mujoco_arena.set_origin([0, 0, 0])
@@ -527,14 +553,14 @@ class BDDLBaseDomain(SingleArmEnv):
         def obj_to_eef_pos(obs_cache):
             # Immediately return default value if cache is empty
             if any(
-                [
-                    name not in obs_cache
-                    for name in [
+                    [
+                        name not in obs_cache
+                        for name in [
                         f"{obj_name}_pos",
                         f"{obj_name}_quat",
                         "world_pose_in_gripper",
                     ]
-                ]
+                    ]
             ):
                 return np.zeros(3)
             obj_pose = T.pose2mat(
@@ -600,8 +626,8 @@ class BDDLBaseDomain(SingleArmEnv):
                 x_ranges, y_ranges = rectangle2xyrange(regions[region_name]["ranges"])
                 yaw_rotation = regions[region_name]["yaw_rotation"]
                 if (
-                    target_name in self.objects_dict
-                    or target_name in self.fixtures_dict
+                        target_name in self.objects_dict
+                        or target_name in self.fixtures_dict
                 ):
                     conditioned_initial_place_state_on_sites.append(state)
                     continue
@@ -637,7 +663,7 @@ class BDDLBaseDomain(SingleArmEnv):
             if state[0] in ["open", "close"]:
                 # If "open" is implemented, we assume "close" is also implemented
                 if state[1] in self.object_states_dict and hasattr(
-                    self.object_states_dict[state[1]], "set_joint"
+                        self.object_states_dict[state[1]], "set_joint"
                 ):
                     obj = self.get_object(state[1])
                     if state[0] == "open":
@@ -658,7 +684,7 @@ class BDDLBaseDomain(SingleArmEnv):
             elif state[0] in ["turnon", "turnoff"]:
                 # If "turnon" is implemented, we assume "turnoff" is also implemented.
                 if state[1] in self.object_states_dict and hasattr(
-                    self.object_states_dict[state[1]], "set_joint"
+                        self.object_states_dict[state[1]], "set_joint"
                 ):
                     obj = self.get_object(state[1])
                     if state[0] == "turnon":

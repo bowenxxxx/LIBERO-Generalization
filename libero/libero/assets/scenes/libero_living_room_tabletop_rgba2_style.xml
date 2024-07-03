@@ -19,7 +19,7 @@
     <material name="table_mat" texture="textable" />
 
     <texture file="living_room_table/living_room_table_texture.png" name="tex-living_room_table" type="2d"/>
-    <material name="living_room_table" reflectance="0.5" texrepeat="1 1" texture="tex-living_room_table" texuniform="false"/>
+    <material name="living_room_table" reflectance="0.5" texrepeat="1 1" texture="tex-living_room_table" texuniform="false" rgba="0.9 0.9 0.9 0.8"/>
     <mesh file="living_room_table/visual/living_room_table_vis.msh" name="living_room_table_vis" scale="1.5 1.5 1.5"/>
     
     <texture file="wall_decoration/wall_decoration_texture.png" name="tex-wall_decoration" type="2d"/>
