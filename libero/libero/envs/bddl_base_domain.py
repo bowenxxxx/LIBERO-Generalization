@@ -326,6 +326,7 @@ class BDDLBaseDomain(SingleArmEnv):
             mujoco_arena = KitchenTableArena(
                 table_full_size=self.kitchen_table_full_size,
                 table_offset=self.workspace_offset,
+                table_rgba=self.table_rgba,
                 xml=self._arena_xml,
                 **self._arena_properties,
             )
@@ -364,6 +365,7 @@ class BDDLBaseDomain(SingleArmEnv):
             )
             self.robots[0].robot_model.set_base_xpos(xpos)
             mujoco_arena = StudyTableArena(
+                table_rgba=self.table_rgba,
                 xml=self._arena_xml,
                 **self._arena_properties,
             )

@@ -1,5 +1,5 @@
 from robosuite.models.arenas import Arena
-from robosuite.utils.mjcf_utils import xml_path_completion
+from robosuite.utils.mjcf_utils import xml_path_completion, array_to_string
 import numpy as np
 
 from libero.libero.envs.arenas.style import get_texture_filename
@@ -32,6 +32,8 @@ class LivingRoomTableArena(Arena):
         self.living_room_table_body = self.worldbody.find(
             "./body[@name='living_room_table']"
         )
+
+        self.table_visual.set("rgba", array_to_string(self.table_rgba))
 
         texplane = self.asset.find("./texture[@name='texplane']")
         plane_file = texplane.get("file")
