@@ -365,7 +365,6 @@ class BDDLBaseDomain(SingleArmEnv):
             )
             self.robots[0].robot_model.set_base_xpos(xpos)
             mujoco_arena = StudyTableArena(
-                table_rgba=self.table_rgba,
                 xml=self._arena_xml,
                 **self._arena_properties,
             )

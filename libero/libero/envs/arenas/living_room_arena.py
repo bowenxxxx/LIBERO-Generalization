@@ -33,8 +33,6 @@ class LivingRoomTableArena(Arena):
             "./body[@name='living_room_table']"
         )
 
-        self.table_visual.set("rgba", array_to_string(self.table_rgba))
-
         texplane = self.asset.find("./texture[@name='texplane']")
         plane_file = texplane.get("file")
         plane_file = "/".join(

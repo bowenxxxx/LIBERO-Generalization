@@ -30,7 +30,6 @@ class StudyTableArena(Arena):
         table_full_size=(0.8, 0.8, 0.05),
         table_friction=(1, 0.005, 0.0001),
         table_offset=(0, 0, 0.8),
-        table_rgba=(0.5, 0.5, 0.5, 1),
         has_legs=True,
         xml="arenas/empty_arena.xml",
         floor_style="light-gray",
@@ -38,7 +37,6 @@ class StudyTableArena(Arena):
     ):
         super().__init__(xml_path_completion(xml))
 
-        self.table_rgba = table_rgba
         self.table_full_size = np.array(table_full_size)
         self.table_half_size = self.table_full_size / 2
         self.table_friction = table_friction
