@@ -77,7 +77,8 @@ class BDDLBaseDomain(SingleArmEnv):
             table_rgba: list = None,
             change_table_color1: bool = False,
             change_table_color2: bool = False,
-            light_refelction: bool = False,
+            light_reflection: bool = False,
+            all_mix: bool = False,
             **kwargs,
     ):
         if table_rgba is None:
@@ -85,7 +86,8 @@ class BDDLBaseDomain(SingleArmEnv):
         self.table_rgba = table_rgba
         self.change_table_color1 = change_table_color1
         self.change_table_color2 = change_table_color2
-        self.light_refelction = light_refelction
+        self.light_reflection = light_reflection
+        self.all_mix = all_mix
         t0 = time.time()
         # settings for table top (hardcoded since it's not an essential part of the environment)
         self.workspace_offset = workspace_offset
@@ -315,7 +317,7 @@ class BDDLBaseDomain(SingleArmEnv):
                 self.table_full_size[0]
             )
             self.robots[0].robot_model.set_base_xpos(xpos)
-            if self.light_refelction:
+            if self.light_reflection or self.all_mix:
                 mujoco_arena = TableArena(
                     table_full_size=self.table_full_size,
                     table_offset=self.workspace_offset,
@@ -338,7 +340,7 @@ class BDDLBaseDomain(SingleArmEnv):
             )
             self.robots[0].robot_model.set_base_xpos(xpos)
 
-            if self.light_refelction:
+            if self.light_reflection or self.all_mix:
                 mujoco_arena = KitchenTableArena(
                     table_full_size=self.kitchen_table_full_size,
                     table_offset=self.workspace_offset,
@@ -388,9 +390,14 @@ class BDDLBaseDomain(SingleArmEnv):
                     xml=os.path.join(self.custom_asset_dir, "scenes/libero_living_room_tabletop_rgba2_style.xml"),
                     **self._arena_properties,
                 )
-            elif self.light_refelction:
+            elif self.light_reflection:
                 mujoco_arena = LivingRoomTableArena(
                     xml=os.path.join(self.custom_asset_dir, "scenes/libero_living_room_tabletop_reflection_style.xml"),
+                    **self._arena_properties,
+                )
+            elif self.all_mix:
+                mujoco_arena = LivingRoomTableArena(
+                    xml=os.path.join(self.custom_asset_dir, "scenes/libero_living_room_tabletop_mix_style.xml"),
                     **self._arena_properties,
                 )
             else:
@@ -415,9 +422,14 @@ class BDDLBaseDomain(SingleArmEnv):
                     xml=os.path.join(self.custom_asset_dir, "scenes/libero_study_rgba2_style.xml"),
                     **self._arena_properties,
                 )
-            elif self.light_refelction:
+            elif self.light_reflection:
                 mujoco_arena = StudyTableArena(
                     xml=os.path.join(self.custom_asset_dir, "scenes/libero_study_reflection_style.xml"),
+                    **self._arena_properties,
+                )
+            elif self.all_mix:
+                mujoco_arena = StudyTableArena(
+                    xml=os.path.join(self.custom_asset_dir, "scenes/libero_study_mix_style.xml"),
                     **self._arena_properties,
                 )
             else:
